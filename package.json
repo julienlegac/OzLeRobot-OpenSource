@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@google-cloud/text-to-speech": "^4.2.1",
+    "atob": "^2.1.2",
+    "dotenv": "^16.0.3",
+    "gtts": "^0.2.1",
+    "play-sound": "^1.1.5",
+    "tmi.js": "^1.8.5"
+  }
+}
