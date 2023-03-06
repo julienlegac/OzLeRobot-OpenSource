@@ -140,6 +140,17 @@ async function gpt(input) {
     // Set isResponding to true
     isResponding = true;
 
+    // Read the conversation history
+    let conversation_history = [];
+
+    try {
+      conversation_history = JSON.parse(fs.readFileSync('conversation_history.json', 'utf8'));
+    } catch (err) {
+      console.log('ERROR JSON')
+    }
+
+    conversation_history.push({role: 'user', content: userstate['display-name'] + " : " + input });
+
     // Call the OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -149,14 +160,7 @@ async function gpt(input) {
         },
         body: JSON.stringify({
             model: 'gpt-3.5-turbo',
-            messages: [
-                { role: 'system', content: 
-                  "Your context here"
-                },
-
-                // The input from the chat
-                { role: 'user', content: input }
-            ]
+            messages: conversation_history,
         })
     });
 
@@ -166,6 +170,10 @@ async function gpt(input) {
     // Get the response from the API
     const data = await response.json();
     const text = data.choices[0].message.content;
+
+    // Save the conversation history
+    conversation_history.push({role: 'assistant', content: text})
+    fs.writeFileSync('conversation_history.json', JSON.stringify(conversation_history), 'utf8');
 
     // Send the response to the chat in text
     tmiClient.say(channelName, text);
